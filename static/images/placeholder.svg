@@ -1,0 +1,94 @@
+<svg width="600" height="400" viewBox="0 0 600 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="600" height="400" fill="#f8f9fa"/>
+  
+  <!-- Grid Pattern -->
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e9ecef" stroke-width="1" opacity="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="600" height="400" fill="url(#grid)"/>
+  
+  <!-- Main Dashboard Container -->
+  <rect x="50" y="50" width="500" height="300" rx="12" fill="white" stroke="#dee2e6" stroke-width="2"/>
+  
+  <!-- Header Section -->
+  <rect x="70" y="70" width="460" height="60" rx="8" fill="#0066cc" opacity="0.1"/>
+  <text x="90" y="95" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#0066cc">Portfolio Dashboard</text>
+  <text x="90" y="115" font-family="Arial, sans-serif" font-size="12" fill="#6c757d">Real-time portfolio analysis and insights</text>
+  
+  <!-- Chart Area -->
+  <g transform="translate(70, 150)">
+    <!-- Pie Chart -->
+    <circle cx="80" cy="80" r="50" fill="#28a745" opacity="0.8"/>
+    <path d="M 80 30 A 50 50 0 0 1 115 105 L 80 80 Z" fill="#0066cc" opacity="0.8"/>
+    <path d="M 115 105 A 50 50 0 0 1 45 105 L 80 80 Z" fill="#ffc107" opacity="0.8"/>
+    <path d="M 45 105 A 50 50 0 0 1 80 30 L 80 80 Z" fill="#dc3545" opacity="0.8"/>
+    
+    <!-- Chart Labels -->
+    <text x="20" y="175" font-family="Arial, sans-serif" font-size="10" fill="#6c757d">Asset Allocation</text>
+    
+    <!-- Bar Chart -->
+    <g transform="translate(200, 20)">
+      <rect x="0" y="100" width="30" height="40" fill="#28a745" opacity="0.8"/>
+      <rect x="40" y="80" width="30" height="60" fill="#0066cc" opacity="0.8"/>
+      <rect x="80" y="60" width="30" height="80" fill="#ffc107" opacity="0.8"/>
+      <rect x="120" y="90" width="30" height="50" fill="#dc3545" opacity="0.8"/>
+      <rect x="160" y="70" width="30" height="70" fill="#17a2b8" opacity="0.8"/>
+      
+      <!-- Chart Labels -->
+      <text x="75" y="160" font-family="Arial, sans-serif" font-size="10" fill="#6c757d">Performance</text>
+    </g>
+    
+    <!-- Data Cards -->
+    <g transform="translate(0, 180)">
+      <rect x="0" y="0" width="100" height="40" rx="4" fill="#28a745" opacity="0.1" stroke="#28a745" stroke-width="1"/>
+      <text x="10" y="15" font-family="Arial, sans-serif" font-size="8" fill="#28a745">Total Value</text>
+      <text x="10" y="30" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#28a745">₹2,45,000</text>
+      
+      <rect x="120" y="0" width="100" height="40" rx="4" fill="#0066cc" opacity="0.1" stroke="#0066cc" stroke-width="1"/>
+      <text x="130" y="15" font-family="Arial, sans-serif" font-size="8" fill="#0066cc">P&L</text>
+      <text x="130" y="30" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#0066cc">+₹15,000</text>
+      
+      <rect x="240" y="0" width="100" height="40" rx="4" fill="#ffc107" opacity="0.1" stroke="#ffc107" stroke-width="1"/>
+      <text x="250" y="15" font-family="Arial, sans-serif" font-size="8" fill="#f57c00">Returns</text>
+      <text x="250" y="30" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#f57c00">+6.5%</text>
+      
+      <rect x="360" y="0" width="100" height="40" rx="4" fill="#17a2b8" opacity="0.1" stroke="#17a2b8" stroke-width="1"/>
+      <text x="370" y="15" font-family="Arial, sans-serif" font-size="8" fill="#17a2b8">Holdings</text>
+      <text x="370" y="30" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#17a2b8">12 Assets</text>
+    </g>
+  </g>
+  
+  <!-- Decorative Elements -->
+  <circle cx="500" cy="100" r="30" fill="#0066cc" opacity="0.1"/>
+  <circle cx="520" cy="80" r="15" fill="#28a745" opacity="0.2"/>
+  <circle cx="480" cy="120" r="20" fill="#ffc107" opacity="0.2"/>
+  
+  <!-- Icons -->
+  <g transform="translate(450, 300)">
+    <!-- Chart Icon -->
+    <rect x="0" y="10" width="3" height="15" fill="#0066cc"/>
+    <rect x="5" y="5" width="3" height="20" fill="#28a745"/>
+    <rect x="10" y="15" width="3" height="10" fill="#ffc107"/>
+    <rect x="15" y="8" width="3" height="17" fill="#dc3545"/>
+    
+    <!-- Trend Arrow -->
+    <path d="M 25 20 L 35 10 L 45 15 L 40 20 L 35 15 L 30 20 Z" fill="#28a745"/>
+  </g>
+  
+  <!-- Footer Text -->
+  <text x="300" y="380" font-family="Arial, sans-serif" font-size="14" fill="#6c757d" text-anchor="middle" font-weight="500">Take Control of Your Portfolio</text>
+  
+  <!-- Subtle Animation Indicators -->
+  <circle cx="580" cy="30" r="3" fill="#28a745" opacity="0.8">
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="570" cy="35" r="2" fill="#0066cc" opacity="0.8">
+    <animate attributeName="opacity" values="1;0.3;1" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="590" cy="35" r="2" fill="#ffc107" opacity="0.8">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/>
+  </circle>
+</svg>

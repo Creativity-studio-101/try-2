@@ -1,0 +1,332 @@
+{% extends "layout.html" %}
+
+{% block title %}SIP/SWP Calculator - Portfolio Analyzer{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4 fw-bold text-primary mb-3">
+                <i class="fas fa-chart-line me-3"></i>SIP & SWP Calculator
+            </h1>
+            <p class="lead text-muted">Plan your systematic investments and withdrawals with accurate projections</p>
+        </div>
+    </div>
+
+    <!-- Calculator Cards -->
+    <div class="row g-4">
+        <!-- SIP Calculator -->
+        <div class="col-lg-6">
+            <div class="card shadow-lg h-100">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-piggy-bank me-2"></i>SIP Calculator
+                    </h4>
+                    <small>Systematic Investment Plan</small>
+                </div>
+                <div class="card-body">
+                    <form id="sipForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Monthly Investment (₹)</label>
+                            <input type="number" class="form-control form-control-lg" id="sipAmount" placeholder="e.g., 5000" min="500" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Expected Annual Return (%)</label>
+                            <input type="number" class="form-control form-control-lg" id="sipReturn" placeholder="e.g., 12" min="1" max="30" step="0.1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Investment Duration (Years)</label>
+                            <input type="number" class="form-control form-control-lg" id="sipDuration" placeholder="e.g., 10" min="1" max="50" required>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-lg w-100">
+                            <i class="fas fa-calculator me-2"></i>Calculate SIP
+                        </button>
+                    </form>
+
+                    <!-- SIP Results -->
+                    <div id="sipResults" class="mt-4" style="display: none;">
+                        <div class="alert alert-success">
+                            <h5 class="fw-bold mb-3">SIP Projection Results</h5>
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="metric-card p-3 border rounded">
+                                        <small class="text-muted">Total Invested</small>
+                                        <h5 class="text-primary" id="sipInvested">₹0</h5>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="metric-card p-3 border rounded">
+                                        <small class="text-muted">Maturity Value</small>
+                                        <h5 class="text-success" id="sipMaturity">₹0</h5>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="metric-card p-3 border rounded">
+                                        <small class="text-muted">Wealth Gained</small>
+                                        <h5 class="text-warning" id="sipGain">₹0</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <canvas id="sipChart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SWP Calculator -->
+        <div class="col-lg-6">
+            <div class="card shadow-lg h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">
+                        <i class="fas fa-hand-holding-usd me-2"></i>SWP Calculator
+                    </h4>
+                    <small>Systematic Withdrawal Plan</small>
+                </div>
+                <div class="card-body">
+                    <form id="swpForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Initial Corpus (₹)</label>
+                            <input type="number" class="form-control form-control-lg" id="swpCorpus" placeholder="e.g., 1000000" min="100000" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Monthly Withdrawal (₹)</label>
+                            <input type="number" class="form-control form-control-lg" id="swpWithdrawal" placeholder="e.g., 8000" min="1000" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Expected Annual Return (%)</label>
+                            <input type="number" class="form-control form-control-lg" id="swpReturn" placeholder="e.g., 8" min="1" max="20" step="0.1" required>
+                        </div>
+                        <button type="submit" class="btn btn-warning btn-lg w-100">
+                            <i class="fas fa-calculator me-2"></i>Calculate SWP
+                        </button>
+                    </form>
+
+                    <!-- SWP Results -->
+                    <div id="swpResults" class="mt-4" style="display: none;">
+                        <div class="alert alert-warning">
+                            <h5 class="fw-bold mb-3">SWP Projection Results</h5>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="metric-card p-3 border rounded">
+                                        <small class="text-muted">Duration</small>
+                                        <h5 class="text-primary" id="swpDuration">0 Years</h5>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="metric-card p-3 border rounded">
+                                        <small class="text-muted">Total Withdrawal</small>
+                                        <h5 class="text-success" id="swpTotal">₹0</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <canvas id="swpChart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparison Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-balance-scale me-2"></i>SIP vs SWP Comparison
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-success">✅ SIP Benefits</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Rupee cost averaging</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Disciplined investing</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Compounding benefits</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Lower investment risk</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-warning">⚠️ SWP Considerations</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-exclamation text-warning me-2"></i>Market volatility impact</li>
+                                <li><i class="fas fa-exclamation text-warning me-2"></i>Corpus depletion risk</li>
+                                <li><i class="fas fa-exclamation text-warning me-2"></i>Tax implications</li>
+                                <li><i class="fas fa-exclamation text-warning me-2"></i>Inflation adjustment needed</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // SIP Calculator
+    document.getElementById('sipForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        calculateSIP();
+    });
+
+    // SWP Calculator
+    document.getElementById('swpForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        calculateSWP();
+    });
+
+    function calculateSIP() {
+        const amount = parseFloat(document.getElementById('sipAmount').value);
+        const returnRate = parseFloat(document.getElementById('sipReturn').value);
+        const duration = parseInt(document.getElementById('sipDuration').value);
+
+        fetch('/api/calculate_sip', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                monthly_investment: amount,
+                annual_return: returnRate,
+                duration_years: duration
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('sipInvested').textContent = '₹' + data.total_invested.toLocaleString();
+                document.getElementById('sipMaturity').textContent = '₹' + data.maturity_value.toLocaleString();
+                document.getElementById('sipGain').textContent = '₹' + data.wealth_gained.toLocaleString();
+                document.getElementById('sipResults').style.display = 'block';
+                
+                // Create chart
+                createSIPChart(data.yearly_data);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function calculateSWP() {
+        const corpus = parseFloat(document.getElementById('swpCorpus').value);
+        const withdrawal = parseFloat(document.getElementById('swpWithdrawal').value);
+        const returnRate = parseFloat(document.getElementById('swpReturn').value);
+
+        fetch('/api/calculate_swp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                corpus: corpus,
+                monthly_withdrawal: withdrawal,
+                annual_return: returnRate
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('swpDuration').textContent = data.duration_years + ' Years';
+                document.getElementById('swpTotal').textContent = '₹' + data.total_withdrawal.toLocaleString();
+                document.getElementById('swpResults').style.display = 'block';
+                
+                // Create chart
+                createSWPChart(data.yearly_data);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function createSIPChart(yearlyData) {
+        const ctx = document.getElementById('sipChart').getContext('2d');
+        
+        // Destroy existing chart if it exists
+        if (window.sipChartInstance) {
+            window.sipChartInstance.destroy();
+        }
+        
+        window.sipChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: yearlyData.map(d => 'Year ' + d.year),
+                datasets: [{
+                    label: 'Investment Value',
+                    data: yearlyData.map(d => d.value),
+                    borderColor: '#28a745',
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    fill: true
+                }, {
+                    label: 'Amount Invested',
+                    data: yearlyData.map(d => d.invested),
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₹' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function createSWPChart(yearlyData) {
+        const ctx = document.getElementById('swpChart').getContext('2d');
+        
+        // Destroy existing chart if it exists
+        if (window.swpChartInstance) {
+            window.swpChartInstance.destroy();
+        }
+        
+        window.swpChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: yearlyData.map(d => 'Year ' + d.year),
+                datasets: [{
+                    label: 'Remaining Corpus',
+                    data: yearlyData.map(d => d.remaining_corpus),
+                    borderColor: '#ffc107',
+                    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₹' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

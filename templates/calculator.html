@@ -1,0 +1,193 @@
+{% extends "layout.html" %}
+
+{% block title %}Portfolio Analyzer - Portfolio Analyzer{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4 fw-bold text-primary mb-3">
+                <i class="fas fa-chart-line me-3"></i>Portfolio Analyzer
+            </h1>
+            <p class="lead text-muted">Analyze your investment portfolio with real-time data and comprehensive insights</p>
+        </div>
+    </div>
+
+    <!-- Main Action Buttons -->
+    <div id="mainActions" class="row justify-content-center">
+        <div class="col-lg-8">
+            <h2 class="text-center mb-5">Choose How to Add Your Portfolio</h2>
+            
+            <div class="row">
+                <!-- Upload CSV -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 shadow action-card">
+                        <div class="card-body text-center p-5">
+                            <div class="action-icon bg-primary text-white rounded-circle mx-auto mb-4">
+                                <i class="fas fa-upload fa-2x"></i>
+                            </div>
+                            <h4 class="card-title">Upload CSV File</h4>
+                            <p class="card-text text-muted">
+                                Upload your existing portfolio data using a CSV file. 
+                                We provide templates for stocks, crypto, and mutual funds.
+                            </p>
+                            <a href="{{ url_for('upload_csv') }}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-file-csv me-2"></i>Upload CSV
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Manually -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 shadow action-card">
+                        <div class="card-body text-center p-5">
+                            <div class="action-icon bg-success text-white rounded-circle mx-auto mb-4">
+                                <i class="fas fa-plus fa-2x"></i>
+                            </div>
+                            <h4 class="card-title">Add Trades Manually</h4>
+                            <p class="card-text text-muted">
+                                Add your trades one by one using our simple form. 
+                                Perfect for tracking new investments or small portfolios.
+                            </p>
+                            <a href="{{ url_for('add_trades') }}" class="btn btn-success btn-lg">
+                                <i class="fas fa-edit me-2"></i>Add Manually
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comprehensive Instructions -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-info-circle text-info me-2"></i>How to Use Portfolio Analyzer
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <h6><i class="fas fa-plus-circle me-2 text-success"></i>Adding Trades</h6>
+                                    <ul class="small">
+                                        <li>Enter stock symbol (e.g., RELIANCE.NS, TCS.NS)</li>
+                                        <li>Specify quantity and buy price</li>
+                                        <li>Select asset type and purchase date</li>
+                                        <li>Add optional notes for reference</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-3">
+                                    <h6><i class="fas fa-upload me-2 text-primary"></i>CSV Upload</h6>
+                                    <ul class="small">
+                                        <li>Download our CSV template</li>
+                                        <li>Fill in your portfolio data</li>
+                                        <li>Upload for bulk portfolio entry</li>
+                                        <li>Supports stocks, crypto, and mutual funds</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-3">
+                                    <h6><i class="fas fa-shield-alt me-2 text-danger"></i>Risk Management</h6>
+                                    <ul class="small">
+                                        <li>Diversify across different sectors</li>
+                                        <li>Set stop-loss at 10-15% below buy price</li>
+                                        <li>Don't invest more than 15% in single stock</li>
+                                        <li>Review and rebalance quarterly</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-3">
+                                    <h6><i class="fas fa-lightbulb me-2 text-warning"></i>Best Practices</h6>
+                                    <ul class="small">
+                                        <li>Research companies before investing</li>
+                                        <li>Monitor market news regularly</li>
+                                        <li>Keep emergency fund separate</li>
+                                        <li>Stay disciplined with your strategy</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Portfolio Status -->
+            {% if session.trades %}
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card border-success">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-check-circle me-2"></i>Current Portfolio Status
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-2">
+                                You have <strong>{{ session.trades|length }}</strong> trades in your current portfolio.
+                            </p>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <a href="{{ url_for('report') }}" class="btn btn-success">
+                                    <i class="fas fa-chart-bar me-2"></i>View Report
+                                </a>
+                                <a href="{{ url_for('add_trades') }}" class="btn btn-outline-primary">
+                                    <i class="fas fa-plus me-2"></i>Add More Trades
+                                </a>
+                                <a href="{{ url_for('clear_portfolio') }}" class="btn btn-outline-danger" 
+                                   onclick="return confirm('Are you sure you want to clear your portfolio?')">
+                                    <i class="fas fa-trash me-2"></i>Clear Portfolio
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function skipIntro() {
+    document.getElementById('introCarousel').style.display = 'none';
+    document.getElementById('mainActions').style.display = 'block';
+}
+
+// Auto-show main actions after carousel completes or after 10 seconds
+document.addEventListener('DOMContentLoaded', function() {
+    const carousel = document.getElementById('introCarousel');
+    
+    // Show main actions when carousel reaches the last slide
+    carousel.addEventListener('slid.bs.carousel', function(e) {
+        if (e.to === 2) { // Last slide (0-indexed)
+            setTimeout(() => {
+                skipIntro();
+            }, 3000);
+        }
+    });
+
+    // Auto-skip after 15 seconds
+    setTimeout(() => {
+        if (document.getElementById('introCarousel').style.display !== 'none') {
+            skipIntro();
+        }
+    }, 15000);
+});
+
+// Action card hover effects
+document.addEventListener('DOMContentLoaded', function() {
+    const actionCards = document.querySelectorAll('.action-card');
+    
+    actionCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.transition = 'transform 0.3s ease';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

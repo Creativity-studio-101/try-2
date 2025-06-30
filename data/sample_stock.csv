@@ -1,0 +1,16 @@
+asset_type,symbol,quantity,buy_price,purchase_date,notes
+Stock,RELIANCE,100,2500.00,2024-01-15,Large cap energy stock
+Stock,TCS,50,3200.00,2024-02-01,IT services leader
+Stock,HDFCBANK,75,1600.00,2024-01-20,Private sector bank
+Stock,INFY,80,1400.00,2024-02-10,IT consulting services
+Stock,ICICIBANK,60,950.00,2024-01-25,Banking sector
+Stock,HINDUNILVR,40,2700.00,2024-02-05,FMCG sector
+Stock,ITC,200,450.00,2024-01-30,Consumer goods
+Stock,SBIN,100,550.00,2024-02-15,Public sector bank
+Stock,BHARTIARTL,150,800.00,2024-01-10,Telecom sector
+Stock,KOTAKBANK,30,1800.00,2024-02-20,Private bank
+Stock,LT,25,2200.00,2024-01-05,Infrastructure
+Stock,ASIANPAINT,20,3100.00,2024-02-25,Paints sector
+Stock,MARUTI,15,8500.00,2024-01-12,Automobile sector
+Stock,HCLTECH,45,1200.00,2024-02-08,IT services
+Stock,WIPRO,70,450.00,2024-01-28,Technology services

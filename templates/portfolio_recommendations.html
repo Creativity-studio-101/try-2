@@ -1,0 +1,426 @@
+{% extends "layout.html" %}
+
+{% block title %}Portfolio Recommendations - Portfolio Analyzer{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4 fw-bold text-primary mb-3">
+                <i class="fas fa-lightbulb me-3"></i>Smart Portfolio Recommendations
+            </h1>
+            <p class="lead text-muted">Get personalized investment recommendations based on your risk profile and goals</p>
+        </div>
+    </div>
+
+    <!-- Investment Profile Form -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-circle me-2"></i>Investment Profile Assessment
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form id="recommendationForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Investment Amount (₹)</label>
+                                <input type="number" class="form-control" id="investmentAmount" placeholder="e.g., 100000" min="5000" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Investment Horizon</label>
+                                <select class="form-select" id="investmentHorizon" required>
+                                    <option value="">Select Duration</option>
+                                    <option value="1">1 Year</option>
+                                    <option value="3">3 Years</option>
+                                    <option value="5">5 Years</option>
+                                    <option value="10">10 Years</option>
+                                    <option value="15">15+ Years</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Risk Tolerance</label>
+                                <select class="form-select" id="riskTolerance" required>
+                                    <option value="">Select Risk Level</option>
+                                    <option value="low">Low Risk (Conservative)</option>
+                                    <option value="moderate">Moderate Risk (Balanced)</option>
+                                    <option value="high">High Risk (Aggressive)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Investment Goal</label>
+                                <select class="form-select" id="investmentGoal" required>
+                                    <option value="">Select Goal</option>
+                                    <option value="wealth_creation">Wealth Creation</option>
+                                    <option value="retirement">Retirement Planning</option>
+                                    <option value="child_education">Child Education</option>
+                                    <option value="emergency_fund">Emergency Fund</option>
+                                    <option value="tax_saving">Tax Saving</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Preferred Sectors</label>
+                                <select class="form-select" id="preferredSector">
+                                    <option value="">Any Sector</option>
+                                    <option value="technology">Technology</option>
+                                    <option value="banking">Banking & Finance</option>
+                                    <option value="pharma">Pharmaceuticals</option>
+                                    <option value="fmcg">FMCG</option>
+                                    <option value="auto">Automobile</option>
+                                    <option value="infrastructure">Infrastructure</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Investment Type</label>
+                                <select class="form-select" id="investmentType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="sip">SIP (Systematic Investment)</option>
+                                    <option value="lumpsum">Lump Sum</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-magic me-2"></i>Get Recommendations
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommendations Results -->
+    <div id="recommendationsSection" style="display: none;">
+        <!-- Asset Allocation Recommendation -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-pie me-2"></i>Recommended Asset Allocation
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="allocationChart" style="height: 300px;">
+                            <canvas id="assetAllocationChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Fund Recommendations -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-star me-2"></i>Top Fund Recommendations
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="fundRecommendations">
+                            <!-- Dynamic content will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Analysis -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card shadow h-100">
+                    <div class="card-header bg-warning text-dark">
+                        <h6 class="mb-0">
+                            <i class="fas fa-shield-alt me-2"></i>Risk Analysis
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="riskAnalysis">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-target me-2"></i>Expected Returns
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="expectedReturns">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('recommendationForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        generateRecommendations();
+    });
+
+    function generateRecommendations() {
+        const formData = {
+            amount: document.getElementById('investmentAmount').value,
+            horizon: document.getElementById('investmentHorizon').value,
+            risk: document.getElementById('riskTolerance').value,
+            goal: document.getElementById('investmentGoal').value,
+            sector: document.getElementById('preferredSector').value,
+            type: document.getElementById('investmentType').value
+        };
+
+        // Show recommendations section
+        document.getElementById('recommendationsSection').style.display = 'block';
+
+        // Generate asset allocation based on risk profile
+        const allocation = generateAssetAllocation(formData.risk, formData.horizon);
+        createAllocationChart(allocation);
+
+        // Generate fund recommendations
+        const funds = generateFundRecommendations(formData);
+        displayFundRecommendations(funds);
+
+        // Display risk analysis
+        displayRiskAnalysis(formData.risk);
+
+        // Display expected returns
+        displayExpectedReturns(formData);
+    }
+
+    function generateAssetAllocation(risk, horizon) {
+        let allocation = {};
+        
+        if (risk === 'low') {
+            allocation = {
+                'Debt Funds': 60,
+                'Large Cap Equity': 25,
+                'Gold/Commodities': 10,
+                'Cash/FD': 5
+            };
+        } else if (risk === 'moderate') {
+            allocation = {
+                'Large Cap Equity': 40,
+                'Mid Cap Equity': 20,
+                'Debt Funds': 30,
+                'International Funds': 10
+            };
+        } else {
+            allocation = {
+                'Large Cap Equity': 30,
+                'Mid Cap Equity': 30,
+                'Small Cap Equity': 20,
+                'Sectoral Funds': 15,
+                'International Funds': 5
+            };
+        }
+
+        return allocation;
+    }
+
+    function createAllocationChart(allocation) {
+        const ctx = document.getElementById('assetAllocationChart').getContext('2d');
+        
+        if (window.allocationChartInstance) {
+            window.allocationChartInstance.destroy();
+        }
+        
+        window.allocationChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(allocation),
+                datasets: [{
+                    data: Object.values(allocation),
+                    backgroundColor: [
+                        '#FF6384',
+                        '#36A2EB',
+                        '#FFCE56',
+                        '#4BC0C0',
+                        '#9966FF',
+                        '#FF9F40'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function generateFundRecommendations(formData) {
+        // Sample fund recommendations based on profile
+        const funds = [
+            {
+                name: "ICICI Prudential Bluechip Fund",
+                category: "Large Cap",
+                returns: { '1y': 15.2, '3y': 12.8, '5y': 14.1 },
+                risk: "Moderate",
+                rating: 4,
+                minInvestment: 5000,
+                expenseRatio: 1.05
+            },
+            {
+                name: "Axis Midcap Fund",
+                category: "Mid Cap", 
+                returns: { '1y': 18.5, '3y': 16.2, '5y': 17.3 },
+                risk: "High",
+                rating: 5,
+                minInvestment: 5000,
+                expenseRatio: 1.25
+            },
+            {
+                name: "HDFC Corporate Bond Fund",
+                category: "Debt",
+                returns: { '1y': 7.8, '3y': 8.2, '5y': 8.5 },
+                risk: "Low",
+                rating: 4,
+                minInvestment: 5000,
+                expenseRatio: 0.45
+            }
+        ];
+
+        return funds;
+    }
+
+    function displayFundRecommendations(funds) {
+        const container = document.getElementById('fundRecommendations');
+        container.innerHTML = '';
+
+        funds.forEach(fund => {
+            const fundCard = `
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h6 class="fw-bold text-primary">${fund.name}</h6>
+                                <span class="badge bg-secondary">${fund.category}</span>
+                                <span class="badge bg-warning ms-2">${'★'.repeat(fund.rating)}</span>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <small class="text-muted">1Y Return</small>
+                                        <div class="fw-bold text-success">${fund.returns['1y']}%</div>
+                                    </div>
+                                    <div class="col-4">
+                                        <small class="text-muted">3Y Return</small>
+                                        <div class="fw-bold text-success">${fund.returns['3y']}%</div>
+                                    </div>
+                                    <div class="col-4">
+                                        <small class="text-muted">Expense</small>
+                                        <div class="fw-bold text-warning">${fund.expenseRatio}%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML += fundCard;
+        });
+    }
+
+    function displayRiskAnalysis(risk) {
+        const container = document.getElementById('riskAnalysis');
+        let riskContent = '';
+
+        if (risk === 'low') {
+            riskContent = `
+                <div class="text-success">
+                    <h6>Conservative Profile</h6>
+                    <p>Your portfolio focuses on capital preservation with steady, predictable returns.</p>
+                    <ul class="small">
+                        <li>Lower volatility</li>
+                        <li>Stable returns</li>
+                        <li>Principal protection</li>
+                    </ul>
+                </div>
+            `;
+        } else if (risk === 'moderate') {
+            riskContent = `
+                <div class="text-warning">
+                    <h6>Balanced Profile</h6>
+                    <p>Your portfolio balances growth potential with manageable risk levels.</p>
+                    <ul class="small">
+                        <li>Moderate volatility</li>
+                        <li>Growth with stability</li>
+                        <li>Diversified approach</li>
+                    </ul>
+                </div>
+            `;
+        } else {
+            riskContent = `
+                <div class="text-danger">
+                    <h6>Aggressive Profile</h6>
+                    <p>Your portfolio aims for maximum growth with higher risk tolerance.</p>
+                    <ul class="small">
+                        <li>Higher volatility</li>
+                        <li>Growth potential</li>
+                        <li>Long-term focus</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        container.innerHTML = riskContent;
+    }
+
+    function displayExpectedReturns(formData) {
+        const container = document.getElementById('expectedReturns');
+        const amount = parseInt(formData.amount);
+        const horizon = parseInt(formData.horizon);
+        
+        let expectedReturn = 8; // Base return
+        if (formData.risk === 'moderate') expectedReturn = 12;
+        if (formData.risk === 'high') expectedReturn = 15;
+
+        const futureValue = amount * Math.pow(1 + expectedReturn/100, horizon);
+        const totalGains = futureValue - amount;
+
+        container.innerHTML = `
+            <div class="row text-center">
+                <div class="col-6">
+                    <h6 class="text-muted">Expected Return</h6>
+                    <h4 class="text-primary">${expectedReturn}%</h4>
+                    <small>Per Annum</small>
+                </div>
+                <div class="col-6">
+                    <h6 class="text-muted">Future Value</h6>
+                    <h4 class="text-success">₹${futureValue.toLocaleString('en-IN', {maximumFractionDigits: 0})}</h4>
+                    <small>After ${horizon} years</small>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <h6 class="text-muted">Total Wealth Gain</h6>
+                <h3 class="text-warning">₹${totalGains.toLocaleString('en-IN', {maximumFractionDigits: 0})}</h3>
+            </div>
+        `;
+    }
+});
+</script>
+{% endblock %}

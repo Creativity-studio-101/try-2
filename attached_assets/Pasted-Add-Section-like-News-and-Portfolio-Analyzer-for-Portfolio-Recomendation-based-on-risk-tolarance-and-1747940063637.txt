@@ -1,0 +1,202 @@
+Add Section like News and Portfolio Analyzer for Portfolio Recomendation based on risk tolarance and usecase like minimuze risk, maximize profit.
+
+another for SIP & SWP calculation:
+📌 SIP Features:
+SIP Projection Calculator
+📈 User enters:
+
+Monthly investment amount
+
+Expected annual return (%)
+
+Duration (in years)
+
+✅ Show:
+
+Total Invested Amount
+
+Estimated Maturity Value
+
+Wealth Gained
+
+Graph: SIP growth over time
+
+📖 Formula:
+
+𝐹
+𝑉
+=
+𝑃
+×
+(
+1
++
+𝑟
+/
+𝑛
+)
+𝑛
+𝑡
+−
+1
+(
+𝑟
+/
+𝑛
+)
+×
+(
+1
++
+𝑟
+/
+𝑛
+)
+FV=P× 
+(r/n)
+(1+r/n) 
+nt
+ −1
+​
+ ×(1+r/n)
+where:
+
+𝑃
+P = monthly investment
+
+𝑟
+r = annual interest rate
+
+𝑛
+n = number of compounding periods in a year (12 for monthly SIP)
+
+𝑡
+t = investment duration in years
+
+📌 SWP Features:
+SWP Withdrawal Simulation
+📉 User enters:
+
+Corpus amount
+
+Monthly withdrawal amount
+
+Expected annual return (%)
+
+Duration (in years)
+
+✅ Show:
+
+How long the money lasts
+
+Remaining corpus at any point
+
+Year-wise breakdown table
+
+Depletion graph over time
+
+📖 Calculation is reverse SIP — withdrawing money monthly while it continues to earn returns.
+
+📊 Bonus Mutual Fund Analysis:
+Historical NAV Charts
+
+Compare Multiple Funds NAV Growth
+
+Fund Performance Over 1/3/5 years
+
+Fund Risk & Return Scatter Plot
+
+Fund Category-wise Average Returns
+
+Fund with Best CAGR or Alpha
+
+last section for Mutual Fund Recomendations
+📌 How It Can Work:
+1️⃣ Collect Inputs From User:
+On a form like:
+
+Investment amount
+
+Sector preference (dropdown or multi-select)
+
+Risk level (Low/Medium/High)
+
+Expected return (approximate range slider)
+
+Investment type: SIP or Lump Sum
+
+Investment horizon (dropdown: 1 year, 3 years, 5 years, 10 years etc.)
+
+2️⃣ Fetch or Load a Mutual Fund Database:
+Options:
+
+Use AMFI NAV API + categories
+
+Scrape MoneyControl, Groww, or ValueResearch fund data and store in a local CSV / SQLite DB
+
+Or manually create a CSV with fields:
+
+Fund Name
+
+Category
+
+Sector
+
+Risk
+
+1Y/3Y/5Y CAGR
+
+Min investment amount
+
+Exit load
+
+Expense ratio
+
+Rating
+
+3️⃣ Filter Mutual Funds Based on Inputs
+Use Python logic to:
+
+Filter funds by sector (if selected)
+
+Match user risk preference
+
+Ensure expected return falls within fund’s average historical returns
+
+Match investment amount with fund’s min. investment
+
+Check for SIP availability (if SIP chosen)
+
+4️⃣ Sort & Recommend Top 3-5 Funds
+Sort the filtered funds based on:
+
+Highest CAGR
+
+Best Risk-Adjusted Return (Sharpe/Sortino Ratio if possible)
+
+Lower Expense Ratio
+
+Higher ratings
+
+Return top 3–5 funds with:
+
+Fund Name
+
+Category
+
+Return history
+
+Risk
+
+Expense ratio
+
+Investment min. amount
+
+Link to official fact sheet
+
+📊 Bonus:
+Show a comparison chart of their past returns
+
+Show sector-wise exposure
+
+Plot risk vs return chart (scatter plot)

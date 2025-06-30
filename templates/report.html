@@ -1,0 +1,861 @@
+{% extends "layout.html" %}
+
+{% block title %}Portfolio Report - Portfolio Analyzer{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>
+                    <i class="fas fa-chart-bar text-primary me-3"></i>Portfolio Report
+                </h1>
+                <div class="btn-group">
+                    <a href="{{ url_for('add_trades') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-plus me-2"></i>Add More Trades
+                    </a>
+                    <a href="{{ url_for('calculator') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-5">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card summary-card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Total Invested</h6>
+                            <h3 class="mb-0">₹{{ "%.2f"|format(portfolio_data.total_invested) }}</h3>
+                        </div>
+                        <div class="summary-icon">
+                            <i class="fas fa-rupee-sign fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card summary-card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Current Value</h6>
+                            <h3 class="mb-0">₹{{ "%.2f"|format(portfolio_data.current_value) }}</h3>
+                        </div>
+                        <div class="summary-icon">
+                            <i class="fas fa-chart-line fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card summary-card {% if portfolio_data.total_pnl >= 0 %}bg-success{% else %}bg-danger{% endif %} text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Total P&L</h6>
+                            <h3 class="mb-0">₹{{ "%.2f"|format(portfolio_data.total_pnl) }}</h3>
+                        </div>
+                        <div class="summary-icon">
+                            <i class="fas {% if portfolio_data.total_pnl >= 0 %}fa-arrow-up{% else %}fa-arrow-down{% endif %} fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card summary-card {% if portfolio_data.total_pnl_pct >= 0 %}bg-success{% else %}bg-danger{% endif %} text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Return %</h6>
+                            <h3 class="mb-0">{{ "%.2f"|format(portfolio_data.total_pnl_pct) }}%</h3>
+                        </div>
+                        <div class="summary-icon">
+                            <i class="fas fa-percentage fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modern Analytics Dashboard -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="analytics-dashboard">
+                <div class="dashboard-header text-white">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h3 class="mb-0 fw-bold">
+                            <i class="fas fa-chart-line me-3"></i>Portfolio Analytics Dashboard
+                        </h3>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-light text-dark px-3 py-2">
+                                <i class="fas fa-sync-alt me-2"></i>Live Data
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Modern Navigation Tabs -->
+                <ul class="nav modern-tabs" id="analyticsTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">
+                                <i class="fas fa-chart-pie me-2"></i>Overview
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="performance-tab" data-bs-toggle="tab" data-bs-target="#performance" type="button" role="tab" aria-controls="performance" aria-selected="false">
+                                <i class="fas fa-chart-line me-2"></i>Performance
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="risk-tab" data-bs-toggle="tab" data-bs-target="#risk" type="button" role="tab" aria-controls="risk" aria-selected="false">
+                                <i class="fas fa-shield-alt me-2"></i>Risk Analysis
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="income-tab" data-bs-toggle="tab" data-bs-target="#income" type="button" role="tab" aria-controls="income" aria-selected="false">
+                                <i class="fas fa-coins me-2"></i>Income
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="health-tab" data-bs-toggle="tab" data-bs-target="#health" type="button" role="tab" aria-controls="health" aria-selected="false">
+                                <i class="fas fa-heartbeat me-2"></i>Health
+                            </button>
+                        </li>
+                    </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content tab-content-area" id="analyticsTabContent">
+                    <!-- Overview Tab -->
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                        <div class="row g-4">
+                            <div class="col-lg-2 col-md-4 col-sm-6">
+                                <div class="metric-card text-center">
+                                    <div class="metric-label text-muted">CAGR</div>
+                                    <div class="metric-value {% if portfolio_data.advanced_metrics.cagr >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                        {{ portfolio_data.advanced_metrics.cagr }}%
+                                    </div>
+                                    <div class="metric-description">Compound Annual Growth</div>
+                                </div>
+                            </div>
+                                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                                    <div class="metric-card text-center p-3 border rounded">
+                                        <h6 class="text-muted">Volatility</h6>
+                                        <h4 class="text-warning">{{ portfolio_data.advanced_metrics.portfolio_volatility }}%</h4>
+                                        <small class="text-muted">Risk Level</small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                                    <div class="metric-card text-center p-3 border rounded">
+                                        <h6 class="text-muted">Sharpe Ratio</h6>
+                                        <h4 class="{% if portfolio_data.advanced_metrics.sharpe_ratio >= 1 %}text-success{% elif portfolio_data.advanced_metrics.sharpe_ratio >= 0.5 %}text-warning{% else %}text-danger{% endif %}">
+                                            {{ portfolio_data.advanced_metrics.sharpe_ratio }}
+                                        </h4>
+                                        <small class="text-muted">Risk-Adjusted Return</small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                                    <div class="metric-card text-center p-3 border rounded">
+                                        <h6 class="text-muted">Beta</h6>
+                                        <h4 class="text-info">{{ portfolio_data.advanced_metrics.portfolio_beta }}</h4>
+                                        <small class="text-muted">Market Correlation</small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                                    <div class="metric-card text-center p-3 border rounded">
+                                        <h6 class="text-muted">Alpha</h6>
+                                        <h4 class="{% if portfolio_data.advanced_metrics.alpha >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                            {{ portfolio_data.advanced_metrics.alpha }}%
+                                        </h4>
+                                        <small class="text-muted">Excess Return</small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                                    <div class="metric-card text-center p-3 border rounded">
+                                        <h6 class="text-muted">Max Drawdown</h6>
+                                        <h4 class="text-danger">{{ portfolio_data.advanced_metrics.max_drawdown }}%</h4>
+                                        <small class="text-muted">Worst Loss</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Charts Row -->
+                            <div class="row mt-4">
+                                <div class="col-lg-6 mb-4">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0"><i class="fas fa-chart-pie text-primary me-2"></i>Asset Allocation</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="allocationChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 mb-4">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0"><i class="fas fa-chart-bar text-success me-2"></i>Top Performers</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="performanceChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Performance Tab -->
+                        <div class="tab-pane fade" id="performance" role="tabpanel" aria-labelledby="performance-tab">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead class="bg-light">
+                                                <tr>
+                                                    <th>Asset</th>
+                                                    <th>1 Month</th>
+                                                    <th>6 Months</th>
+                                                    <th>1 Year</th>
+                                                    <th>Volatility</th>
+                                                    <th>Beta</th>
+                                                    <th>Weight</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for item in portfolio_data.portfolio_items %}
+                                                <tr>
+                                                    <td><strong>{{ item.symbol }}</strong></td>
+                                                    <td>
+                                                        <span class="badge {% if item.returns_1m >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+                                                            {% if item.returns_1m >= 0 %}+{% endif %}{{ item.returns_1m }}%
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge {% if item.returns_6m >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+                                                            {% if item.returns_6m >= 0 %}+{% endif %}{{ item.returns_6m }}%
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge {% if item.returns_1y >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+                                                            {% if item.returns_1y >= 0 %}+{% endif %}{{ item.returns_1y }}%
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="text-{% if item.volatility > 30 %}danger{% elif item.volatility > 15 %}warning{% else %}success{% endif %}">
+                                                            {{ item.volatility }}%
+                                                        </span>
+                                                    </td>
+                                                    <td>{{ item.beta }}</td>
+                                                    <td>{{ item.weight }}%</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Risk Analysis Tab -->
+                        <div class="tab-pane fade" id="risk" role="tabpanel" aria-labelledby="risk-tab">
+                            <div class="row">
+                                <div class="col-lg-6 mb-4">
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <small class="text-muted">Value at Risk (95%)</small>
+                                            <h4 class="text-danger">{{ portfolio_data.advanced_metrics.var_95 }}%</h4>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">Diversification Ratio</small>
+                                            <h4 class="text-info">{{ portfolio_data.advanced_metrics.diversification_ratio }}</h4>
+                                        </div>
+                                    </div>
+                                    
+                                    <h6 class="text-muted mb-3">Risk Exposure by Asset:</h6>
+                                    {% for risk_item in portfolio_data.advanced_metrics.risk_exposure %}
+                                    <div class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                                        <span><strong>{{ risk_item.symbol }}</strong></span>
+                                        <div>
+                                            <span class="badge bg-{% if risk_item.risk_level == 'High' %}danger{% elif risk_item.risk_level == 'Medium' %}warning{% else %}success{% endif %}">
+                                                {{ risk_item.risk_level }} Risk
+                                            </span>
+                                            <small class="text-muted ms-2">{{ risk_item.weight }}%</small>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-lg-6 mb-4">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0"><i class="fas fa-thermometer-half text-warning me-2"></i>Risk Visualization</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="riskChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Income Tab -->
+                        <div class="tab-pane fade" id="income" role="tabpanel" aria-labelledby="income-tab">
+                            <div class="row">
+                                <div class="col-lg-6 mb-4">
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <small class="text-muted">Avg Dividend Yield</small>
+                                            <h4 class="text-success">{{ portfolio_data.advanced_metrics.avg_dividend_yield }}%</h4>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">Est. Annual Dividend</small>
+                                            <h4 class="text-success">₹{{ "%.0f"|format(portfolio_data.advanced_metrics.estimated_annual_dividend) }}</h4>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="alert alert-light">
+                                        <h6><i class="fas fa-calendar-alt me-2"></i>Income Projections</h6>
+                                        <p class="mb-1"><strong>Monthly:</strong> ₹{{ "%.0f"|format(portfolio_data.advanced_metrics.estimated_annual_dividend / 12) }}</p>
+                                        <p class="mb-1"><strong>Quarterly:</strong> ₹{{ "%.0f"|format(portfolio_data.advanced_metrics.estimated_annual_dividend / 4) }}</p>
+                                        <p class="mb-0"><strong>Annual:</strong> ₹{{ "%.0f"|format(portfolio_data.advanced_metrics.estimated_annual_dividend) }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 mb-4">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Estimates based on historical dividend patterns. Actual dividends may vary.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Health Tab -->
+                        <div class="tab-pane fade" id="health" role="tabpanel" aria-labelledby="health-tab">
+                            {% if portfolio_data.advanced_metrics.health_indicators %}
+                            <div class="row">
+                                {% for indicator in portfolio_data.advanced_metrics.health_indicators %}
+                                <div class="col-lg-6 mb-3">
+                                    <div class="alert alert-{{ indicator.severity }} mb-2">
+                                        <h6 class="alert-heading">
+                                            <i class="fas fa-{% if indicator.type == 'overexposure' %}exclamation-triangle{% elif indicator.type == 'underperforming' %}arrow-down{% else %}info-circle{% endif %} me-2"></i>
+                                            {{ indicator.type|title }}
+                                        </h6>
+                                        <p class="mb-0">{{ indicator.message }}</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="alert alert-success">
+                                <h6 class="alert-heading">
+                                    <i class="fas fa-check-circle me-2"></i>Portfolio Health: Good
+                                </h6>
+                                <p class="mb-0">Your portfolio shows good diversification and risk management. No major concerns detected.</p>
+                            </div>
+                            {% endif %}
+                            
+                            <h6 class="mt-4 mb-3">
+                                <i class="fas fa-balance-scale me-2"></i>Rebalancing Suggestions
+                            </h6>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="suggestion-card p-3 border rounded">
+                                        <h6 class="text-primary">Optimal Allocation</h6>
+                                        <p class="small mb-1">Stocks: 60-70%</p>
+                                        <p class="small mb-1">Mutual Funds: 20-25%</p>
+                                        <p class="small mb-0">Crypto: 5-10%</p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="suggestion-card p-3 border rounded">
+                                        <h6 class="text-success">Diversification Tips</h6>
+                                        <p class="small mb-1">• Add different sectors</p>
+                                        <p class="small mb-1">• Consider international funds</p>
+                                        <p class="small mb-0">• Include debt instruments</p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="suggestion-card p-3 border rounded">
+                                        <h6 class="text-warning">Risk Management</h6>
+                                        <p class="small mb-1">• Set stop-loss orders</p>
+                                        <p class="small mb-1">• Review quarterly</p>
+                                        <p class="small mb-0">• Monitor volatility</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Historical Performance Analysis -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history text-info me-2"></i>Historical Returns Analysis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Asset</th>
+                                    <th>1 Month</th>
+                                    <th>6 Months</th>
+                                    <th>1 Year</th>
+                                    <th>Volatility</th>
+                                    <th>Beta</th>
+                                    <th>Weight</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in portfolio_data.portfolio_items %}
+                                <tr>
+                                    <td><strong>{{ item.symbol }}</strong></td>
+                                    <td>
+                                        <span class="badge {% if item.returns_1m >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+                                            {% if item.returns_1m >= 0 %}+{% endif %}{{ item.returns_1m }}%
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if item.returns_6m >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+                                            {% if item.returns_6m >= 0 %}+{% endif %}{{ item.returns_6m }}%
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if item.returns_1y >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+                                            {% if item.returns_1y >= 0 %}+{% endif %}{{ item.returns_1y }}%
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="text-{% if item.volatility > 30 %}danger{% elif item.volatility > 15 %}warning{% else %}success{% endif %}">
+                                            {{ item.volatility }}%
+                                        </span>
+                                    </td>
+                                    <td>{{ item.beta }}</td>
+                                    <td>{{ item.weight }}%</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Holdings Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-table text-info me-2"></i>Detailed Holdings
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Asset</th>
+                                    <th>Type</th>
+                                    <th>Quantity</th>
+                                    <th>Buy Price</th>
+                                    <th>Current Price</th>
+                                    <th>Invested</th>
+                                    <th>Current Value</th>
+                                    <th>P&L</th>
+                                    <th>Return %</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in portfolio_data.portfolio_items %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ item.symbol }}</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if item.asset_type == 'Stock' %}bg-primary{% elif item.asset_type == 'Crypto' %}bg-warning{% else %}bg-info{% endif %}">
+                                            {{ item.asset_type }}
+                                        </span>
+                                    </td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>₹{{ item.buy_price }}</td>
+                                    <td>₹{{ item.current_price }}</td>
+                                    <td>₹{{ item.invested }}</td>
+                                    <td>₹{{ item.current_value }}</td>
+                                    <td class="{% if item.pnl >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                        ₹{{ item.pnl }}
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if item.pnl_pct >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+                                            {% if item.pnl_pct >= 0 %}+{% endif %}{{ item.pnl_pct }}%
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Risk Analysis and Income Projections -->
+    <div class="row mb-5">
+        <!-- Risk Analysis -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-shield-alt me-2"></i>Risk Analysis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <small class="text-muted">Value at Risk (95%)</small>
+                            <h5 class="text-danger">{{ portfolio_data.advanced_metrics.var_95 }}%</h5>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Diversification Ratio</small>
+                            <h5 class="text-info">{{ portfolio_data.advanced_metrics.diversification_ratio }}</h5>
+                        </div>
+                    </div>
+                    
+                    <h6 class="text-muted mb-2">Risk Exposure by Asset:</h6>
+                    {% for risk_item in portfolio_data.advanced_metrics.risk_exposure %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span><strong>{{ risk_item.symbol }}</strong></span>
+                        <div>
+                            <span class="badge bg-{% if risk_item.risk_level == 'High' %}danger{% elif risk_item.risk_level == 'Medium' %}warning{% else %}success{% endif %}">
+                                {{ risk_item.risk_level }} Risk
+                            </span>
+                            <small class="text-muted ms-2">{{ risk_item.weight }}%</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Dividend & Income Analysis -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-coins me-2"></i>Income Analysis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <small class="text-muted">Avg Dividend Yield</small>
+                            <h5 class="text-success">{{ portfolio_data.advanced_metrics.avg_dividend_yield }}%</h5>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Est. Annual Dividend</small>
+                            <h5 class="text-success">₹{{ "%.0f"|format(portfolio_data.advanced_metrics.estimated_annual_dividend) }}</h5>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-light">
+                        <h6><i class="fas fa-calendar-alt me-2"></i>Income Projections</h6>
+                        <p class="mb-1"><strong>Monthly:</strong> ₹{{ "%.0f"|format(portfolio_data.advanced_metrics.estimated_annual_dividend / 12) }}</p>
+                        <p class="mb-1"><strong>Quarterly:</strong> ₹{{ "%.0f"|format(portfolio_data.advanced_metrics.estimated_annual_dividend / 4) }}</p>
+                        <p class="mb-0"><strong>Annual:</strong> ₹{{ "%.0f"|format(portfolio_data.advanced_metrics.estimated_annual_dividend) }}</p>
+                    </div>
+                    
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Estimates based on historical dividend patterns. Actual dividends may vary.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portfolio Health & Suggestions -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-heartbeat me-2"></i>Portfolio Health & Recommendations
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if portfolio_data.advanced_metrics.health_indicators %}
+                    <div class="row">
+                        {% for indicator in portfolio_data.advanced_metrics.health_indicators %}
+                        <div class="col-lg-6 mb-3">
+                            <div class="alert alert-{{ indicator.severity }} mb-2">
+                                <h6 class="alert-heading">
+                                    <i class="fas fa-{% if indicator.type == 'overexposure' %}exclamation-triangle{% elif indicator.type == 'underperforming' %}arrow-down{% else %}info-circle{% endif %} me-2"></i>
+                                    {{ indicator.type|title }}
+                                </h6>
+                                <p class="mb-0">{{ indicator.message }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-check-circle me-2"></i>Portfolio Health: Good
+                        </h6>
+                        <p class="mb-0">Your portfolio shows good diversification and risk management. No major concerns detected.</p>
+                    </div>
+                    {% endif %}
+                    
+                    <h6 class="mt-4 mb-3">
+                        <i class="fas fa-balance-scale me-2"></i>Rebalancing Suggestions
+                    </h6>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="suggestion-card p-3 border rounded">
+                                <h6 class="text-primary">Optimal Allocation</h6>
+                                <p class="small mb-1">Stocks: 60-70%</p>
+                                <p class="small mb-1">Mutual Funds: 20-25%</p>
+                                <p class="small mb-0">Crypto: 5-10%</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="suggestion-card p-3 border rounded">
+                                <h6 class="text-success">Diversification Tips</h6>
+                                <p class="small mb-1">• Add different sectors</p>
+                                <p class="small mb-1">• Consider international funds</p>
+                                <p class="small mb-0">• Include debt instruments</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="suggestion-card p-3 border rounded">
+                                <h6 class="text-warning">Risk Management</h6>
+                                <p class="small mb-1">• Set stop-loss orders</p>
+                                <p class="small mb-1">• Review quarterly</p>
+                                <p class="small mb-0">• Monitor volatility</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{{ url_for('add_trades') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Add More Trades
+                </a>
+                <a href="{{ url_for('upload_csv') }}" class="btn btn-outline-info">
+                    <i class="fas fa-upload me-2"></i>Upload New Portfolio
+                </a>
+                <a href="{{ url_for('clear_portfolio') }}" class="btn btn-outline-danger"
+                   onclick="return confirm('Are you sure you want to clear your portfolio?')">
+                    <i class="fas fa-trash me-2"></i>Clear Portfolio
+                </a>
+                <a href="{{ url_for('download_portfolio_csv') }}" class="btn btn-outline-success">
+                    <i class="fas fa-download me-2"></i>Download CSV
+                </a>
+                <button onclick="window.print()" class="btn btn-outline-secondary">
+                    <i class="fas fa-print me-2"></i>Print Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Asset Allocation Pie Chart
+const allocationCtx = document.getElementById('allocationChart').getContext('2d');
+const allocationData = {{ portfolio_data.allocation | tojson | safe }};
+
+const allocationLabels = Object.keys(allocationData);
+const allocationValues = Object.values(allocationData);
+
+const allocationChart = new Chart(allocationCtx, {
+    type: 'pie',
+    data: {
+        labels: allocationLabels,
+        datasets: [{
+            data: allocationValues,
+            backgroundColor: [
+                '#0066cc',
+                '#ffc107',
+                '#28a745',
+                '#dc3545',
+                '#6f42c1',
+                '#fd7e14'
+            ],
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.label + ': ' + context.parsed.toFixed(1) + '%';
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Performance Bar Chart
+const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+const portfolioItems = {{ portfolio_data.portfolio_items | tojson | safe }};
+
+// Sort by P&L percentage and take top 10
+const sortedItems = portfolioItems.sort((a, b) => b.pnl_pct - a.pnl_pct).slice(0, 10);
+
+const performanceChart = new Chart(performanceCtx, {
+    type: 'bar',
+    data: {
+        labels: sortedItems.map(item => item.symbol),
+        datasets: [{
+            label: 'Return %',
+            data: sortedItems.map(item => item.pnl_pct),
+            backgroundColor: sortedItems.map(item => item.pnl_pct >= 0 ? '#28a745' : '#dc3545'),
+            borderColor: sortedItems.map(item => item.pnl_pct >= 0 ? '#1e7e34' : '#c82333'),
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return value + '%';
+                    }
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + '%';
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Risk Heatmap Chart
+const riskCtx = document.getElementById('riskChart').getContext('2d');
+const riskChart = new Chart(riskCtx, {
+    type: 'doughnut',
+    data: {
+        labels: portfolioItems.map(item => item.symbol),
+        datasets: [{
+            label: 'Risk Level',
+            data: portfolioItems.map(item => item.volatility || 0),
+            backgroundColor: portfolioItems.map(item => {
+                const volatility = item.volatility || 0;
+                if (volatility > 30) return 'rgba(220, 53, 69, 0.8)'; // High risk - Red
+                if (volatility > 15) return 'rgba(255, 193, 7, 0.8)'; // Medium risk - Yellow
+                return 'rgba(40, 167, 69, 0.8)'; // Low risk - Green
+            }),
+            borderColor: portfolioItems.map(item => {
+                const volatility = item.volatility || 0;
+                if (volatility > 30) return 'rgba(220, 53, 69, 1)';
+                if (volatility > 15) return 'rgba(255, 193, 7, 1)';
+                return 'rgba(40, 167, 69, 1)';
+            }),
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    generateLabels: function(chart) {
+                        const data = chart.data;
+                        return data.labels.map((label, i) => {
+                            const volatility = data.datasets[0].data[i];
+                            const riskLevel = volatility > 30 ? 'High' : volatility > 15 ? 'Medium' : 'Low';
+                            return {
+                                text: `${label} (${riskLevel})`,
+                                fillStyle: data.datasets[0].backgroundColor[i],
+                                strokeStyle: data.datasets[0].borderColor[i],
+                                lineWidth: 2,
+                                hidden: false,
+                                index: i
+                            };
+                        });
+                    }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const volatility = context.parsed;
+                        const riskLevel = volatility > 30 ? 'High Risk' : volatility > 15 ? 'Medium Risk' : 'Low Risk';
+                        return `${context.label}: ${volatility.toFixed(1)}% volatility (${riskLevel})`;
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Auto-refresh data every 5 minutes
+setInterval(function() {
+    location.reload();
+}, 300000);
+
+// Print styles
+window.addEventListener('beforeprint', function() {
+    // Hide charts during print for better formatting
+    document.querySelectorAll('canvas').forEach(canvas => {
+        canvas.style.display = 'none';
+    });
+});
+
+window.addEventListener('afterprint', function() {
+    // Restore charts after print
+    document.querySelectorAll('canvas').forEach(canvas => {
+        canvas.style.display = 'block';
+    });
+});
+</script>
+{% endblock %}

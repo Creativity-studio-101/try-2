@@ -1,0 +1,16 @@
+asset_type,symbol,quantity,buy_price,purchase_date,notes
+Crypto,BTC,0.1,4500000.00,2024-01-20,Bitcoin - digital gold
+Crypto,ETH,2.5,200000.00,2024-01-25,Ethereum - smart contracts
+Crypto,BNB,5.0,25000.00,2024-02-01,Binance coin
+Crypto,XRP,1000.0,45.00,2024-02-05,Ripple - cross border payments
+Crypto,ADA,800.0,35.00,2024-01-30,Cardano - proof of stake
+Crypto,SOL,10.0,8000.00,2024-02-10,Solana - high speed blockchain
+Crypto,DOT,50.0,600.00,2024-01-15,Polkadot - interoperability
+Crypto,MATIC,500.0,80.00,2024-02-15,Polygon - layer 2 scaling
+Crypto,LINK,25.0,1200.00,2024-01-22,Chainlink - oracle network
+Crypto,UNI,30.0,800.00,2024-02-12,Uniswap - decentralized exchange
+Crypto,AVAX,20.0,2500.00,2024-01-28,Avalanche - smart contracts
+Crypto,ATOM,100.0,900.00,2024-02-18,Cosmos - internet of blockchains
+Crypto,LTC,3.0,6500.00,2024-01-18,Litecoin - digital silver
+Crypto,BCH,1.5,18000.00,2024-02-03,Bitcoin Cash - peer to peer cash
+Crypto,FTT,40.0,1500.00,2024-01-25,FTX Token - exchange utility

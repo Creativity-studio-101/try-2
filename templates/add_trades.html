@@ -1,0 +1,440 @@
+{% extends "layout.html" %}
+
+{% block title %}Add Trades - Portfolio Analyzer{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="mb-4">
+                <i class="fas fa-plus-circle text-success me-3"></i>Add Trades Manually
+            </h1>
+            <p class="lead text-muted mb-5">
+                Enter your investment details below. You can add multiple trades and generate a comprehensive report.
+            </p>
+
+            <!-- Add Trade Form -->
+            <div class="card shadow mb-5">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>Add New Trade
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('add_trade') }}" method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="asset_type" class="form-label">Asset Type *</label>
+                                <select class="form-select" id="asset_type" name="asset_type" required>
+                                    <option value="">Select Asset Type</option>
+                                    <option value="Stock">Stock</option>
+                                    <option value="Crypto">Cryptocurrency</option>
+                                    <option value="Mutual Fund">Mutual Fund</option>
+                                    <option value="ETF">ETF</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="symbol" class="form-label">Symbol/Name *</label>
+                                <div class="position-relative">
+                                    <input type="text" class="form-control" id="symbol" name="symbol" 
+                                           placeholder="e.g., RELIANCE, BTC, TCS" required autocomplete="off">
+                                    <div id="suggestions" class="dropdown-menu w-100" style="max-height: 200px; overflow-y: auto;"></div>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Start typing to see suggestions or enter any symbol
+                                </small>
+                                
+                                <!-- Current Price Display -->
+                                <div id="currentPriceDisplay" class="mt-2" style="display: none;">
+                                    <div class="alert alert-info p-2">
+                                        <small>
+                                            <strong>Current Price:</strong> 
+                                            <span id="currentPrice">-</span>
+                                            <span id="priceChange" class="ms-2">-</span>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="quantity" class="form-label">Quantity *</label>
+                                <input type="number" class="form-control" id="quantity" name="quantity" 
+                                       step="0.01" min="0" placeholder="0.00" required>
+                                <small class="form-text text-muted">
+                                    Number of shares/units/coins
+                                </small>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="buy_price" class="form-label">Buy Price *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input type="number" class="form-control" id="buy_price" name="buy_price" 
+                                           step="0.01" min="0" placeholder="0.00" required>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Price per unit at the time of purchase
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="purchase_date" class="form-label">Purchase Date *</label>
+                                <input type="date" class="form-control" id="purchase_date" name="purchase_date" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="notes" class="form-label">Notes (Optional)</label>
+                                <input type="text" class="form-control" id="notes" name="notes" 
+                                       placeholder="Any additional notes">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-plus me-2"></i>Add Trade
+                            </button>
+                            <a href="{{ url_for('calculator') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Current Trades Summary -->
+            {% if trades %}
+            <div class="card shadow">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>Current Portfolio ({{ trades|length }} trades)
+                    </h5>
+                    <a href="{{ url_for('report') }}" class="btn btn-light btn-sm">
+                        <i class="fas fa-chart-bar me-1"></i>Generate Report
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Asset Type</th>
+                                    <th>Symbol</th>
+                                    <th>Quantity</th>
+                                    <th>Buy Price</th>
+                                    <th>Invested</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for trade in trades %}
+                                <tr>
+                                    <td>
+                                        <span class="badge {% if trade.asset_type == 'Stock' %}bg-primary{% elif trade.asset_type == 'Crypto' %}bg-warning{% else %}bg-info{% endif %}">
+                                            {{ trade.asset_type }}
+                                        </span>
+                                    </td>
+                                    <td><strong>{{ trade.symbol }}</strong></td>
+                                    <td>{{ trade.quantity }}</td>
+                                    <td>₹{{ "%.2f"|format(trade.buy_price) }}</td>
+                                    <td>₹{{ "%.2f"|format(trade.quantity * trade.buy_price) }}</td>
+                                    <td>{{ trade.purchase_date }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Total Invested: ₹{{ "%.2f"|format(trades|sum(attribute='quantity') * trades|sum(attribute='buy_price')) }}</strong>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('upload_csv') }}" class="btn btn-outline-primary">
+                                    <i class="fas fa-upload me-1"></i>Upload CSV
+                                </a>
+                                <a href="{{ url_for('clear_portfolio') }}" class="btn btn-outline-danger"
+                                   onclick="return confirm('Are you sure you want to clear all trades?')">
+                                    <i class="fas fa-trash me-1"></i>Clear All
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="card shadow">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Trades Added Yet</h4>
+                    <p class="text-muted">
+                        Start by adding your first trade using the form above, or 
+                        <a href="{{ url_for('upload_csv') }}">upload a CSV file</a> with your portfolio data.
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Help Section -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-question-circle text-info me-2"></i>Need Help?
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h6>Stock Symbols</h6>
+                                    <p class="small">Use NSE symbols like RELIANCE, TCS, INFY</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Crypto Symbols</h6>
+                                    <p class="small">Use symbols like BTC, ETH, BNB, XRP</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Mutual Funds</h6>
+                                    <p class="small">Enter the fund name or scheme code</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-calculate invested amount and symbol search
+document.addEventListener('DOMContentLoaded', function() {
+    const quantityInput = document.getElementById('quantity');
+    const priceInput = document.getElementById('buy_price');
+    const symbolInput = document.getElementById('symbol');
+    const assetTypeSelect = document.getElementById('asset_type');
+    const suggestionsContainer = document.getElementById('suggestions');
+    const currentPriceDisplay = document.getElementById('currentPriceDisplay');
+    const currentPriceSpan = document.getElementById('currentPrice');
+    const priceChangeSpan = document.getElementById('priceChange');
+    
+    let debounceTimer;
+    let selectedSymbol = null;
+    
+    function updateInvestedAmount() {
+        const quantity = parseFloat(quantityInput.value) || 0;
+        const price = parseFloat(priceInput.value) || 0;
+        const invested = quantity * price;
+        
+        console.log('Invested amount:', invested.toFixed(2));
+    }
+    
+    // Search for symbols with debouncing
+    function searchSymbols(query) {
+        if (query.length < 2) {
+            suggestionsContainer.style.display = 'none';
+            return;
+        }
+        
+        fetch(`/api/search_symbols?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                displaySuggestions(data);
+            })
+            .catch(error => {
+                console.error('Error searching symbols:', error);
+            });
+    }
+    
+    // Display symbol suggestions
+    function displaySuggestions(suggestions) {
+        suggestionsContainer.innerHTML = '';
+        
+        if (suggestions.length === 0) {
+            suggestionsContainer.style.display = 'none';
+            return;
+        }
+        
+        suggestions.forEach(item => {
+            const suggestionItem = document.createElement('button');
+            suggestionItem.type = 'button';
+            suggestionItem.className = 'dropdown-item d-flex justify-content-between align-items-center';
+            suggestionItem.innerHTML = `
+                <div>
+                    <strong>${item.symbol}</strong><br>
+                    <small class="text-muted">${item.name}</small>
+                </div>
+                <span class="badge bg-${item.type === 'Stock' ? 'primary' : item.type === 'Crypto' ? 'warning' : 'info'}">${item.type}</span>
+            `;
+            
+            suggestionItem.addEventListener('click', function() {
+                selectSymbol(item);
+            });
+            
+            suggestionsContainer.appendChild(suggestionItem);
+        });
+        
+        suggestionsContainer.style.display = 'block';
+    }
+    
+    // Select a symbol from suggestions
+    function selectSymbol(item) {
+        symbolInput.value = item.symbol;
+        assetTypeSelect.value = item.type;
+        selectedSymbol = item;
+        suggestionsContainer.style.display = 'none';
+        
+        // Fetch current price
+        fetchCurrentPrice(item.symbol, item.type);
+    }
+    
+    // Fetch current price for a symbol
+    function fetchCurrentPrice(symbol, assetType) {
+        if (!symbol) return;
+        
+        currentPriceDisplay.style.display = 'block';
+        currentPriceSpan.textContent = 'Loading...';
+        priceChangeSpan.textContent = '';
+        
+        fetch(`/api/get_price/${encodeURIComponent(symbol)}?type=${encodeURIComponent(assetType)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentPriceSpan.textContent = `${data.currency}${data.price}`;
+                    const changeText = data.change >= 0 ? `+${data.change}` : `${data.change}`;
+                    const changeClass = data.change >= 0 ? 'text-success' : 'text-danger';
+                    priceChangeSpan.innerHTML = `<span class="${changeClass}">${changeText} (${data.change_pct}%)</span>`;
+                    
+                    // Auto-fill buy price if empty
+                    if (!priceInput.value && data.price > 0) {
+                        priceInput.value = data.price;
+                        updateInvestedAmount();
+                    }
+                } else {
+                    currentPriceSpan.textContent = 'Price not available';
+                    priceChangeSpan.textContent = '';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching price:', error);
+                currentPriceSpan.textContent = 'Error loading price';
+                priceChangeSpan.textContent = '';
+            });
+    }
+    
+    // Symbol input event handlers
+    symbolInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            searchSymbols(query);
+        }, 300);
+        
+        // Hide price if symbol is cleared
+        if (!query) {
+            currentPriceDisplay.style.display = 'none';
+        }
+    });
+    
+    // Handle manual symbol entry (when user types and doesn't select from dropdown)
+    symbolInput.addEventListener('blur', function() {
+        const symbol = this.value.trim().toUpperCase();
+        const assetType = assetTypeSelect.value;
+        
+        setTimeout(() => {
+            suggestionsContainer.style.display = 'none';
+            
+            // If symbol was typed manually and asset type is selected, fetch price
+            if (symbol && assetType && (!selectedSymbol || selectedSymbol.symbol !== symbol)) {
+                fetchCurrentPrice(symbol, assetType);
+            }
+        }, 200);
+    });
+    
+    // Asset type change handler
+    assetTypeSelect.addEventListener('change', function() {
+        const symbol = symbolInput.value.trim();
+        if (symbol) {
+            fetchCurrentPrice(symbol, this.value);
+        }
+    });
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!symbolInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+            suggestionsContainer.style.display = 'none';
+        }
+    });
+    
+    // Keyboard navigation for suggestions
+    symbolInput.addEventListener('keydown', function(e) {
+        const items = suggestionsContainer.querySelectorAll('.dropdown-item');
+        let focusedIndex = Array.from(items).findIndex(item => item.classList.contains('active'));
+        
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            focusedIndex = Math.min(focusedIndex + 1, items.length - 1);
+            updateFocus(items, focusedIndex);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            focusedIndex = Math.max(focusedIndex - 1, 0);
+            updateFocus(items, focusedIndex);
+        } else if (e.key === 'Enter' && focusedIndex >= 0) {
+            e.preventDefault();
+            items[focusedIndex].click();
+        } else if (e.key === 'Escape') {
+            suggestionsContainer.style.display = 'none';
+        }
+    });
+    
+    function updateFocus(items, focusedIndex) {
+        items.forEach((item, index) => {
+            item.classList.toggle('active', index === focusedIndex);
+        });
+    }
+    
+    // Existing functionality
+    quantityInput.addEventListener('input', updateInvestedAmount);
+    priceInput.addEventListener('input', updateInvestedAmount);
+    
+    // Set default date to today
+    const dateInput = document.getElementById('purchase_date');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.value = today;
+    
+    // Form validation
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const symbol = document.getElementById('symbol').value.trim();
+        const quantity = parseFloat(document.getElementById('quantity').value);
+        const price = parseFloat(document.getElementById('buy_price').value);
+        
+        if (!symbol) {
+            alert('Please enter a valid symbol/name');
+            e.preventDefault();
+            return;
+        }
+        
+        if (quantity <= 0) {
+            alert('Quantity must be greater than 0');
+            e.preventDefault();
+            return;
+        }
+        
+        if (price <= 0) {
+            alert('Buy price must be greater than 0');
+            e.preventDefault();
+            return;
+        }
+    });
+});
+</script>
+{% endblock %}

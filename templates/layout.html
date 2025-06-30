@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Portfolio Analyzer{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('home') }}">
+                <i class="fas fa-chart-line me-2"></i>Portfolio Analyzer
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'home' %}active{% endif %}" href="{{ url_for('home') }}">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'news' %}active{% endif %}" href="{{ url_for('news') }}">
+                            <i class="fas fa-newspaper me-1"></i>News
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'calculator' %}active{% endif %}" href="{{ url_for('calculator') }}">
+                            <i class="fas fa-calculator me-1"></i>Portfolio Analyzer
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'sip_calculator' %}active{% endif %}" href="/sip_calculator">
+                            <i class="fas fa-chart-line me-1"></i>SIP/SWP Calculator
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'portfolio_recommendations' %}active{% endif %}" href="/portfolio_recommendations">
+                            <i class="fas fa-lightbulb me-1"></i>Fund Recommendations
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'stock_research' %}active{% endif %}" href="/stock_research">
+                            <i class="fas fa-search me-1"></i>Stock Research
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link btn border-0" id="themeToggle" title="Toggle Dark/Light Mode">
+                            <i class="fas fa-moon" id="themeIcon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'warning' if category == 'warning' else 'info' if category == 'info' else 'success' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container text-center">
+            <p>&copy; 2024 Portfolio Analyzer. Built for financial insights and portfolio management.</p>
+            <p class="small text-muted">
+                Data provided by Yahoo Finance. This tool is for educational purposes only and should not be considered as financial advice.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    
+    <!-- Dark Mode Toggle Script -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Dark mode script loading...');
+        
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        
+        console.log('Theme toggle found:', !!themeToggle);
+        console.log('Theme icon found:', !!themeIcon);
+        
+        if (!themeToggle || !themeIcon) return;
+        
+        let isDark = localStorage.getItem('dark-mode') === 'true';
+        
+        function applyTheme(dark) {
+            isDark = dark;
+            localStorage.setItem('dark-mode', isDark);
+            
+            if (isDark) {
+                // Apply dark mode
+                document.body.style.backgroundColor = '#1a1b1e';
+                document.body.style.color = '#e9ecef';
+                document.body.classList.add('dark-theme');
+                themeIcon.className = 'fas fa-sun text-warning';
+                
+                // Dark mode for cards
+                document.querySelectorAll('.card').forEach(card => {
+                    card.style.backgroundColor = '#25262b';
+                    card.style.color = '#e9ecef';
+                    card.style.borderColor = '#373a40';
+                });
+                
+                // Dark mode for navbar
+                const navbar = document.querySelector('.navbar');
+                if (navbar) {
+                    navbar.style.backgroundColor = '#25262b';
+                    navbar.style.borderColor = '#373a40';
+                }
+                
+                // Dark mode for form controls
+                document.querySelectorAll('input, select, textarea').forEach(input => {
+                    input.style.backgroundColor = '#25262b';
+                    input.style.color = '#e9ecef';
+                    input.style.borderColor = '#373a40';
+                });
+                
+                console.log('Dark mode applied');
+            } else {
+                // Apply light mode
+                document.body.style.backgroundColor = '';
+                document.body.style.color = '';
+                document.body.classList.remove('dark-theme');
+                themeIcon.className = 'fas fa-moon';
+                
+                // Light mode for cards
+                document.querySelectorAll('.card').forEach(card => {
+                    card.style.backgroundColor = '';
+                    card.style.color = '';
+                    card.style.borderColor = '';
+                });
+                
+                // Light mode for navbar
+                const navbar = document.querySelector('.navbar');
+                if (navbar) {
+                    navbar.style.backgroundColor = '';
+                    navbar.style.borderColor = '';
+                }
+                
+                // Light mode for form controls
+                document.querySelectorAll('input, select, textarea').forEach(input => {
+                    input.style.backgroundColor = '';
+                    input.style.color = '';
+                    input.style.borderColor = '';
+                });
+                
+                console.log('Light mode applied');
+            }
+        }
+        
+        function toggleTheme() {
+            applyTheme(!isDark);
+        }
+        
+        // Apply saved theme on load
+        applyTheme(isDark);
+        
+        // Click handler
+        themeToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Theme toggle clicked');
+            toggleTheme();
+        });
+    });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

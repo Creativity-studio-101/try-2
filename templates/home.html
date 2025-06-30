@@ -1,0 +1,255 @@
+{% extends "layout.html" %}
+
+{% block title %}Home - Portfolio Analyzer{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-gradient-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Take Control of Your Portfolio</h1>
+                <p class="lead mb-4">
+                    Track your investments, analyze performance, and make informed decisions with real-time market data and comprehensive portfolio insights.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('calculator') }}" class="btn btn-light btn-lg">
+                        <i class="fas fa-chart-bar me-2"></i>Analyze Portfolio
+                    </a>
+                    <a href="{{ url_for('news') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-newspaper me-2"></i>Latest News
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="{{ url_for('static', filename='images/placeholder.svg') }}" alt="Portfolio Dashboard" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Market Data Dashboard -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Live Market Data</h2>
+        
+        <!-- Market Indices -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <h4 class="mb-3"><i class="fas fa-chart-line text-primary me-2"></i>Major Indices</h4>
+                <div class="row">
+                    {% if market_data.indices %}
+                        {% for symbol, data in market_data.indices.items() %}
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card market-card">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ data.name }}</h6>
+                                    <h5 class="text-primary mb-1">{{ data.price }}</h5>
+                                    <span class="badge {% if data.change >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+                                        {% if data.change >= 0 %}+{% endif %}{{ data.change }} ({{ data.change_pct }}%)
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>Market data is currently unavailable. Please try again later.
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Cryptocurrency -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <h4 class="mb-3"><i class="fab fa-bitcoin text-warning me-2"></i>Cryptocurrency</h4>
+                <div class="row">
+                    {% if market_data.crypto %}
+                        {% for symbol, data in market_data.crypto.items() %}
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card market-card">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ data.name }}</h6>
+                                    <h5 class="text-warning mb-1">${{ data.price }}</h5>
+                                    <span class="badge {% if data.change >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+                                        {% if data.change >= 0 %}+{% endif %}{{ data.change_pct }}%
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>Cryptocurrency data is currently unavailable.
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Commodities -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <h4 class="mb-3"><i class="fas fa-coins text-success me-2"></i>Commodities</h4>
+                <div class="row">
+                    {% if market_data.commodities %}
+                        {% for symbol, data in market_data.commodities.items() %}
+                        <div class="col-lg-6 col-md-6 mb-3">
+                            <div class="card market-card">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ data.name }}</h6>
+                                    <h5 class="text-success mb-1">${{ data.price }}</h5>
+                                    <span class="badge {% if data.change >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+                                        {% if data.change >= 0 %}+{% endif %}{{ data.change_pct }}%
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>Commodities data is currently unavailable.
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Movers -->
+        <div class="row">
+            <!-- Top Gainers -->
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-arrow-up me-2"></i>Top Gainers</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if market_data.top_gainers %}
+                            {% for stock in market_data.top_gainers %}
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <div>
+                                    <strong>{{ stock.symbol }}</strong><br>
+                                    <small class="text-muted">₹{{ stock.price }}</small>
+                                </div>
+                                <span class="badge bg-success">+{{ stock.change_pct }}%</span>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">No data available</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Losers -->
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0"><i class="fas fa-arrow-down me-2"></i>Top Losers</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if market_data.top_losers %}
+                            {% for stock in market_data.top_losers %}
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <div>
+                                    <strong>{{ stock.symbol }}</strong><br>
+                                    <small class="text-muted">₹{{ stock.price }}</small>
+                                </div>
+                                <span class="badge bg-danger">{{ stock.change_pct }}%</span>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">No data available</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Most Active -->
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-fire me-2"></i>Most Active</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if market_data.most_active %}
+                            {% for stock in market_data.most_active %}
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <div>
+                                    <strong>{{ stock.symbol }}</strong><br>
+                                    <small class="text-muted">₹{{ stock.price }}</small>
+                                </div>
+                                <span class="badge {% if stock.change_pct >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+                                    {% if stock.change_pct >= 0 %}+{% endif %}{{ stock.change_pct }}%
+                                </span>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">No data available</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Why Choose Portfolio Analyzer?</h2>
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="text-center">
+                    <div class="feature-icon bg-primary text-white rounded-circle mx-auto mb-3">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h5>Portfolio Tracking</h5>
+                    <p class="text-muted">Monitor your investments across stocks, crypto, and mutual funds in one place.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="text-center">
+                    <div class="feature-icon bg-success text-white rounded-circle mx-auto mb-3">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h5>Real-time Data</h5>
+                    <p class="text-muted">Get live market prices and track your portfolio performance in real-time.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="text-center">
+                    <div class="feature-icon bg-warning text-white rounded-circle mx-auto mb-3">
+                        <i class="fas fa-file-csv"></i>
+                    </div>
+                    <h5>CSV Import</h5>
+                    <p class="text-muted">Easily import your existing portfolio data using CSV files.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-refresh market data every 5 minutes
+setInterval(function() {
+    fetch('/api/market_data')
+        .then(response => response.json())
+        .then(data => {
+            // Update market data without page refresh
+            console.log('Market data updated');
+        })
+        .catch(error => console.error('Error updating market data:', error));
+}, 300000); // 5 minutes
+</script>
+{% endblock %}
